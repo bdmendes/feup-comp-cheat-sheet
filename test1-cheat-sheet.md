@@ -12,16 +12,6 @@
   - Guides context-sensitive ("semantic") analysis (type checking)
   - Builds IR for source program, ie. an AST
 
-### The backend
-
-- Instruction Selection
-  - Produce fast, compact code
-  - A pattern matching problem
-- Register Allocation
-  - Have each value in a register when it is used
-- Instruction Scheduling
-  - Avoid stalls and interlocks
-
 ## Lexical Analysis
 
 ### Regular expressions
@@ -84,7 +74,7 @@
 
 ##### LL(1): Predictive parsing
 - Sufficient for programming languages
-- For each non-terminal symbol, each rule must correspond to a different FIRST set (must left factor rules)
+- For each non-terminal symbol, the intersection of FIRST sets for each rule must be null (must left factor rules)
 - A parsing table maps non-terminals to input and corresponding rule to choose
 - Build the table based on NULLABLE, FIRST and FOLLOW
 - Rely on the parsing table and an auxiliary stack to parse input
@@ -92,6 +82,13 @@
 <img src="img/ll-decision.png" width="300px">
 
 <img src="img/ll-parsing.png" width="300px">
+
+##### Compute FOLLOW
+- FOLLOW does not include Є
+- FOLLOW(S) = { $ }
+- If A -> pBq is a production, where p, B and q are any grammar symbols, then everything in FIRST(q) except Є is in FOLLOW(B).
+- If A->pB is a production, then everything in FOLLOW(A) is in FOLLOW(B).
+- If A->pBq is a production and FIRST(q) contains Є, then FOLLOW(B) contains { FIRST(q) – Є } U FOLLOW(A) 
 
 ### Bottom-up parsing
 
@@ -111,9 +108,7 @@
 ### Symbol table
 - Relates identifiers with semantic information, such as registry location, types and variable values
 - Typically implemented with a hash map
-- Must represent scopes in some form
-  - Open a new scope
-  - Close a new scope restoring the previous stack
+- Represent scopes with recursive hash maps
 
 <img src="img/symbol-table.png" width="300px">
 
@@ -122,7 +117,6 @@
 - Generate more efficient code and avoid errors at run-time
 
 #### Attribute grammars
-
 - Semantic rules for the grammar
 - Often implemented with visitor pattern, recursively
 - Attributes can be inherited (variable types) or synthesized (types of sub-expressions)
